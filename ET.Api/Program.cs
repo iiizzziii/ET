@@ -1,4 +1,7 @@
 using ET.Api.Data;
+using ET.Api.Extensions;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +17,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy => {
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
+
+builder.Services
+    .AddFluentValidationAutoValidation()
+    .AddFluentValidationAutoValidation()
+    .AddValidatorsFromAssemblyContaining<AddEmployeeValidator.EmployeesCollectionValidator>();
 
 var app = builder.Build();
 

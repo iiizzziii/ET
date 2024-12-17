@@ -17,9 +17,9 @@ public class Employee
     [Required]
     public DateTime BirthDate { get; set; }
     
-    [Required]
+    // [Required]
     [ForeignKey(nameof(Position))]
-    public int PositionId { get; set; }
+    public int? PositionId { get; set; }
     
     [Required]
     public string IpAddress { get; set; }

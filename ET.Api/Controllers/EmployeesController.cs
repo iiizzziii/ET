@@ -46,9 +46,30 @@ public class EmployeesController(
 
     [HttpPost("create")]
     public async Task<ActionResult<EmployeeDto>> CreateEmployee(
-        [FromBody] EmployeeDto[] employees)
+        [FromBody] EmployeesCollection employees)
     {
-        throw new NotImplementedException();
+        // if (!ModelState.IsValid) return BadRequest();
+        var positions = await dbContext.Positions.ToListAsync();
+
+        var newEmployees = employees.Employees.Select(e => new Employee
+        {
+            Name = e.Name,
+            Surname = e.Surname,
+            BirthDate = e.BirthDate,
+            Position = positions.FirstOrDefault(p => p.PositionName == e.Position)
+                       ?? 
+                    new Position { /*PositionId = new Random().Next(),*/ PositionName = e.Position, },
+            IpAddress = e.IpAddress,
+            IpCountryCode = "123.456.7890",
+        });
+
+        foreach (var e in newEmployees)
+        {
+            await dbContext.Employees.AddAsync(e);
+        }
+
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
     }
-    
 }

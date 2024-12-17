@@ -8,3 +8,8 @@ public class EmployeeDto
     public string Position { get; set; }
     public string IpAddress { get; set; }
 }
+
+public class EmployeesCollection
+{
+    public List<EmployeeDto> Employees { get; set; }
+}
