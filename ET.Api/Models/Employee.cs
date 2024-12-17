@@ -15,7 +15,7 @@ public class Employee
     public string Surname { get; set; }
     
     [Required]
-    public DateTime DateTime { get; set; }
+    public DateTime BirthDate { get; set; }
     
     [Required]
     [ForeignKey(nameof(Position))]

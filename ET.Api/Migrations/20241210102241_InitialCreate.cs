@@ -62,7 +62,7 @@ namespace ET.Api.Migrations
 
             migrationBuilder.InsertData(
                 table: "Employees",
-                columns: new[] { "EmployeeId", "DateTime", "IpAddress", "IpCountryCode", "Name", "PositionId", "Surname" },
+                columns: new[] { "EmployeeId", "BirthDate", "IpAddress", "IpCountryCode", "Name", "PositionId", "Surname" },
                 values: new object[,]
                 {
                     { 1, new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "192.168.1.1", "US", "John", 1, "Doe" },

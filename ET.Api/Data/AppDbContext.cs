@@ -39,7 +39,7 @@ public class AppDbContext(
                     EmployeeId = 1,
                     Name = "John",
                     Surname = "Doe",
-                    DateTime = new DateTime(1990, 1, 1),
+                    BirthDate = new DateTime(1990, 1, 1),
                     PositionId = 1,
                     IpAddress = "192.168.1.1",
                     IpCountryCode = "US"
@@ -49,7 +49,7 @@ public class AppDbContext(
                     EmployeeId = 2,
                     Name = "Jane",
                     Surname = "Smith",
-                    DateTime = new DateTime(1985, 5, 15),
+                    BirthDate = new DateTime(1985, 5, 15),
                     PositionId = 2,
                     IpAddress = "192.168.1.2",
                     IpCountryCode = "CA"
@@ -59,7 +59,7 @@ public class AppDbContext(
                     EmployeeId = 3,
                     Name = "Alice",
                     Surname = "Brown",
-                    DateTime = new DateTime(1992, 7, 20),
+                    BirthDate = new DateTime(1992, 7, 20),
                     PositionId = 3,
                     IpAddress = "192.168.1.3",
                     IpCountryCode = "UK"
