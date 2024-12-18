@@ -15,16 +15,15 @@ public class Employee
     public string Surname { get; set; }
     
     [Required]
-    public DateTime BirthDate { get; set; }
-    
-    // [Required]
-    [ForeignKey(nameof(Position))]
-    public int? PositionId { get; set; }
+    public string BirthDate { get; set; }
     
     [Required]
-    public string IpAddress { get; set; }
+    public string? IpAddress { get; set; }
     
     public string IpCountryCode { get; set; }
     
-    public Position Position { get; set; }
+    [ForeignKey(nameof(Position))]
+    public int? PositionId { get; set; }
+    
+    public Position? Position { get; set; }
 }

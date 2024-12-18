@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using ET.Api.Data;
 using ET.Api.Extensions;
 using ET.Api.Models;
@@ -44,32 +46,45 @@ public class EmployeesController(
         return (from e in employees select e.EmployeeId).ToArray();
     }
 
-    [HttpPost("create")]
-    public async Task<ActionResult<EmployeeDto>> CreateEmployee(
+    [HttpPost("add")]
+    public async Task<ActionResult<EmployeeDto>> AddEmployees(
         [FromBody] EmployeesCollection employees)
     {
-        // if (!ModelState.IsValid) return BadRequest();
+        IEnumerable<Employee> newEmployees;
         var positions = await dbContext.Positions.ToListAsync();
 
-        var newEmployees = employees.Employees.Select(e => new Employee
+        using (var httpClient = new HttpClient())
         {
-            Name = e.Name,
-            Surname = e.Surname,
-            BirthDate = e.BirthDate,
-            Position = positions.FirstOrDefault(p => p.PositionName == e.Position)
-                       ?? 
-                    new Position { /*PositionId = new Random().Next(),*/ PositionName = e.Position, },
-            IpAddress = e.IpAddress,
-            IpCountryCode = "123.456.7890",
-        });
-
-        foreach (var e in newEmployees)
-        {
-            await dbContext.Employees.AddAsync(e);
+            newEmployees = employees.Employees.Select(e => new Employee
+            {
+                Name = e.Name,
+                Surname = e.Surname,
+                BirthDate = e.BirthDate,
+                Position = positions.FirstOrDefault(p => p.PositionName == e.Position) ?? null,
+                IpAddress = System.Net.IPAddress.TryParse(e.IpAddress, out _) ? e.IpAddress : default,
+                IpCountryCode = GetIpCountyCode(e.IpAddress, httpClient).Result,
+            });
+            
+            await dbContext.Employees.AddRangeAsync(newEmployees);
+            await dbContext.SaveChangesAsync();
         }
-
-        await dbContext.SaveChangesAsync();
-
+        
         return Ok();
+    }
+
+    private static async Task<string> GetIpCountyCode(string ipAddress, HttpClient client)
+    {
+        var response = await client.GetAsync($"http://ip-api.com/json/{ipAddress}");
+        if (!response.IsSuccessStatusCode) return "NA";
+        var content = await response.Content.ReadAsStringAsync();
+        var ip = JsonSerializer.Deserialize<Ip>(content);
+
+        return ip?.CountryCode ?? "NA";
+    }
+
+    private class Ip
+    {
+        [JsonPropertyName("countryCode")]
+        public string? CountryCode { get; init; }
     }
 }

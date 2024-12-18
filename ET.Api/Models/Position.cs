@@ -10,3 +10,8 @@ public class Position
     [Required]
     public string PositionName { get; set; }
 }
+
+public class PositionCollection
+{
+    public List<Position> Positions { get; set; }
+}
