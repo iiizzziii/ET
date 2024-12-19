@@ -1,5 +1,6 @@
 using ET.Api.Data;
 using ET.Api.Extensions;
+using ET.Api.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,8 @@ builder.Services
     .AddFluentValidationAutoValidation()
     .AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblyContaining<AddEmployeeValidator.EmployeesCollectionValidator>();
+
+builder.Services.AddHttpClient<IIpService, IpService>();
 
 var app = builder.Build();
 
