@@ -71,7 +71,28 @@ public class EmployeesController(
         {
             Console.WriteLine(e);
             // throw;
-            return StatusCode(500, "failed to update the db");
+            return StatusCode(500, "failed to update");
+        }
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<string>> DeleteEmployee(int id)
+    {
+        var employee = await dbContext.Employees.FindAsync(id);
+        if (employee == null) return NotFound();
+
+        dbContext.Employees.Remove(employee);
+
+        try
+        {
+            await dbContext.SaveChangesAsync();
+            return Ok($"employee deleted, id: {id}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            // throw;
+            return StatusCode(500, "failed to remove");
         }
     }
 
