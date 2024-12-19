@@ -1,10 +1,10 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using ET.Api.Data;
 using ET.Api.Extensions;
 using ET.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ET.Api.Controllers;
 
@@ -46,6 +46,35 @@ public class EmployeesController(
         return (from e in employees select e.EmployeeId).ToArray();
     }
 
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<EmployeeDto>> UpdateEmployee(
+        int id,
+        [FromBody] EmployeeDto body)
+    {
+        var positions = await dbContext.Positions.ToListAsync();
+        var employee = await dbContext.Employees.FindAsync(id);
+        if (employee == null) return NotFound();
+
+        employee.Name = body.Name;
+        employee.Surname = body.Surname;
+        employee.BirthDate = body.BirthDate;
+        employee.IpAddress = body.IpAddress ?? employee.IpAddress;
+        employee.Position = positions.FirstOrDefault(p => 
+            p.PositionName == body.Position) ?? employee.Position;
+
+        try
+        {
+            await dbContext.SaveChangesAsync();
+            return Ok(employee);
+        }
+        catch (DbUpdateException e)
+        {
+            Console.WriteLine(e);
+            // throw;
+            return StatusCode(500, "failed to update the db");
+        }
+    }
+
     [HttpPost("add")]
     public async Task<ActionResult<EmployeeDto>> AddEmployees(
         [FromBody] EmployeesCollection employees)
@@ -57,6 +86,7 @@ public class EmployeesController(
         {
             newEmployees = employees.Employees.Select(e => new Employee
             {
+                //ToDo: name+surname+dob db check, cleanup, crud, error handle, serilog
                 Name = e.Name,
                 Surname = e.Surname,
                 BirthDate = e.BirthDate,
