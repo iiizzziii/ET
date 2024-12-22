@@ -96,6 +96,25 @@ public class EmployeesController(
         }
     }
 
+    [HttpPost("positions")]
+    public async Task<ActionResult<IEnumerable<Position>>> AddPositions(
+        [FromBody] PositionNamesDto newNames)
+    {
+        var existingPositionNames = await dbContext.Positions
+            .Select(p => p.PositionName)
+            .ToListAsync();
+
+        var newPositions = newNames.Positions.Where(nP => 
+                !string.IsNullOrWhiteSpace(nP) &&
+                !existingPositionNames.Contains(nP, StringComparer.OrdinalIgnoreCase))
+            .Select(nP => new Position { PositionName = nP }).ToList();
+            
+        await dbContext.Positions.AddRangeAsync(newPositions);
+        await dbContext.SaveChangesAsync();
+
+        return Ok(newPositions);
+    }
+    
     [HttpPost("add")]
     public async Task<ActionResult<EmployeeDto>> AddEmployees(
         [FromBody] EmployeesCollection employees)

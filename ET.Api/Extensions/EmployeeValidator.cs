@@ -5,6 +5,7 @@ using System.Globalization;
 
 namespace ET.Api.Extensions;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class EmployeeValidator : AbstractValidator<EmployeeDto>
 {
     public EmployeeValidator(AppDbContext dbContext)
@@ -33,21 +34,22 @@ public class EmployeeValidator : AbstractValidator<EmployeeDto>
             .NotEmpty().WithMessage("birthdate cannot be empty")
             .Must(ValidDate).WithMessage("birthdate format not valid");
         
-        RuleFor(e => e.Position)
-            .NotEmpty().WithMessage("position cannot be empty");
-        
         RuleFor(e => e.IpAddress)
             .NotEmpty().WithMessage("ip address cannot be empty")
             .Must(ValidIpAddress!).WithMessage("ip address not valid");
+        
+        // RuleFor(e => e.Position)
+        //     .NotEmpty().WithMessage("position cannot be empty");
     }
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class EmployeeCollectionValidator : AbstractValidator<EmployeesCollection> 
     {
-        public EmployeeCollectionValidator(AppDbContext dbContext) 
+        public EmployeeCollectionValidator(IValidator<EmployeeDto> employeeValidator) 
         {
             RuleFor(eC => eC.Employees).ForEach(e => 
             {
-                e.SetValidator(new EmployeeValidator(dbContext)); 
+                e.SetValidator(employeeValidator); 
             }); 
         } 
     }

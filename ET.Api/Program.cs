@@ -21,7 +21,6 @@ builder.Services.AddCors(options =>
 
 builder.Services
     .AddFluentValidationAutoValidation()
-    .AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblyContaining<EmployeeValidator.EmployeeCollectionValidator>();
 
 builder.Services.AddHttpClient<IIpService, IpService>();

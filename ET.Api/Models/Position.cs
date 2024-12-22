@@ -17,3 +17,8 @@ public class PositionCollection
 {
     public List<Position> Positions { get; set; }
 }
+
+public class PositionNamesDto
+{
+    public List<string> Positions { get; set; }
+}
