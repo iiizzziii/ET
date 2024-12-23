@@ -7,16 +7,20 @@ using Microsoft.EntityFrameworkCore;
 namespace ET.Api.Controllers;
 
 [ApiController]
-[Route(("api/[controller]"))]
-public class BulkAddController(
+[Route("api/[controller]")]
+public class MassAddController(
     AppDbContext dbContext, 
-    IIpService ipService
+    IIpService ipService,
+    ILogger<MassAddController> logger
     ) : ControllerBase
 {
     [HttpPost]
+    [Route("employees")]
     public async Task<IActionResult> AddEmployees(
         [FromBody] EmployeesCollection employees)
     {
+        if (!ModelState.IsValid) return Ok("___");
+        
         var positions = await dbContext.Positions.ToListAsync();
 
         var newEmployees = employees.Employees.Select(e => 

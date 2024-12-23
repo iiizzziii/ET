@@ -15,6 +15,10 @@ public class AppDbContext(
         {
             entity.HasKey(p => p.PositionId);
             entity.Property(p => p.PositionName).IsRequired();
+            entity.HasMany(e => e.Employees)
+                .WithOne(p => p.Position)
+                .OnDelete(DeleteBehavior.SetNull);
+            
             entity.HasData(
                 new Position { PositionId = 1, PositionName = "Manager" },
                 new Position { PositionId = 2, PositionName = "Developer" },
@@ -27,11 +31,12 @@ public class AppDbContext(
             entity.HasKey(e => e.EmployeeId);
             entity.Property(e => e.Name).IsRequired();
             entity.Property(e => e.Surname).IsRequired();
-
-            entity.HasOne(e => e.Position);
-                  // .WithMany(p => p.Employees)
-                  // .HasForeignKey(e => e.PositionId)
-                  // .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(e => e.BirthDate).IsRequired();
+            entity.HasOne(e => e.Position)
+                .WithMany(p => p.Employees)
+                .HasForeignKey(e => e.PositionId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
             
             entity.HasData(
                 new Employee

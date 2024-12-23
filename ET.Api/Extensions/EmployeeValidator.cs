@@ -37,12 +37,9 @@ public class EmployeeValidator : AbstractValidator<EmployeeDto>
         RuleFor(e => e.IpAddress)
             .NotEmpty().WithMessage("ip address cannot be empty")
             .Must(ValidIpAddress!).WithMessage("ip address not valid");
-        
-        // RuleFor(e => e.Position)
-        //     .NotEmpty().WithMessage("position cannot be empty");
     }
 
-    // ReSharper disable once ClassNeverInstantiated.Global
+    //ReSharper disable once ClassNeverInstantiated.Global
     public class EmployeeCollectionValidator : AbstractValidator<EmployeesCollection> 
     {
         public EmployeeCollectionValidator(IValidator<EmployeeDto> employeeValidator) 
@@ -50,7 +47,7 @@ public class EmployeeValidator : AbstractValidator<EmployeeDto>
             RuleFor(eC => eC.Employees).ForEach(e => 
             {
                 e.SetValidator(employeeValidator); 
-            }); 
+            });
         } 
     }
     

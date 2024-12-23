@@ -9,22 +9,24 @@ using System.Text.Json.Serialization;
 namespace ET.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api")]
 public class EmployeesController(
+    ILogger<EmployeesController> logger,
     AppDbContext dbContext) : ControllerBase
 {
     [HttpGet("{id:int}")]
     public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
     {
         var employee = await dbContext.Employees.FindAsync(id);
-        var positions = await dbContext.Positions.ToListAsync();
+        // var positions = await dbContext.Positions.ToListAsync();
             
         return new EmployeeDto
         {
-            Name = employee.Name,
+            Name = employee!.Name,
             Surname = employee.Surname,
             BirthDate = employee.BirthDate,
-            Position = employee.Position.PositionName,
+            // Position = employee.Position.PositionName,
+            Position = employee.Position.PositionName ?? default,
             IpAddress = employee.IpAddress,
         };
     }

@@ -9,13 +9,7 @@ public class Position
     
     [Required]
     public string PositionName { get; set; }
-
-    // public ICollection<Employee> Employees { get; set; } = new List<Employee>();
-}
-
-public class PositionCollection
-{
-    public List<Position> Positions { get; set; }
+    public ICollection<Employee> Employees { get; set; }
 }
 
 public class PositionNamesDto
