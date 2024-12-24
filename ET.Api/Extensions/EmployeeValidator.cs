@@ -2,41 +2,90 @@ using ET.Api.Data;
 using ET.Api.Models;
 using FluentValidation;
 using System.Globalization;
+using ILogger = Serilog.ILogger;
 
 namespace ET.Api.Extensions;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class EmployeeValidator : AbstractValidator<EmployeeDto>
 {
-    public EmployeeValidator(AppDbContext dbContext)
-    {
-        RuleFor(e => new { e.Name, e.Surname, e.BirthDate })
-            .Custom((employee, context) =>
-            {
-                var exists = dbContext.Employees.Any(e =>
-                    e.Name == employee.Name &&
-                    e.Surname == employee.Surname &&
-                    e.BirthDate == employee.BirthDate);
+    private const string EmptyMessage = " cannot be empty";
 
-                if (exists)
-                {
-                    context.AddFailure(nameof(employee), "employee with equal name/surname/birthdate already exists");
-                }
-            });
+    public EmployeeValidator(AppDbContext dbContext, ILogger logger)
+    {
+        RuleFor(e => new { e.Name, e.Surname, e.BirthDate }).Custom((employee, context) =>
+        {
+            var exists = dbContext.Employees.Any(e =>
+                e.Name == employee.Name &&
+                e.Surname == employee.Surname &&
+                e.BirthDate == employee.BirthDate);
+
+            if (!exists) return;
+            
+            var m = $"employee {employee.Name} {employee.Surname} already exists";
+            logger.Error(m);
+            context.AddFailure(nameof(employee), m);
+        });
+
+        RuleFor(e => e.Name).Custom((name, context) =>
+        {
+            if (!string.IsNullOrWhiteSpace(name)) return;
+            
+            const string m = $"{nameof(name)}{EmptyMessage}";
+            logger.Error(m);
+            context.AddFailure(nameof(name), m);
+        });
         
-        RuleFor(e => e.Name)
-            .NotEmpty().WithMessage("name cannot be empty");
+        RuleFor(e => e.Surname).Custom((surname, context) =>
+        {
+            if (!string.IsNullOrWhiteSpace(surname)) return;
+            
+            const string m = $"{nameof(surname)}{EmptyMessage}";
+            logger.Error(m);
+            context.AddFailure(nameof(surname), m);
+        });
         
-        RuleFor(e => e.Surname)
-            .NotEmpty().WithMessage("surname cannot be empty");
+        RuleFor(e => e.BirthDate).Custom((birthdate, context) =>
+        {
+            if (!string.IsNullOrWhiteSpace(birthdate)) return;
         
-        RuleFor(e => e.BirthDate)
-            .NotEmpty().WithMessage("birthdate cannot be empty")
-            .Must(ValidDate).WithMessage("birthdate format not valid");
+            var m = $"{birthdate}{EmptyMessage}";
+            logger.Error(m);
+            context.AddFailure(nameof(birthdate), m);
+        });
+            
+        RuleFor(e => e.BirthDate).Custom((birthdate, context) =>
+        {
+            if (DateTime.TryParseExact(
+                birthdate,
+                "yyyy/MM/dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var validFormatDate) && 
+                validFormatDate < DateTime.Today) return;
+
+            var m = $"{birthdate} is not a valid date in yyyy/mm/dd format";
+            logger.Error(m);
+            context.AddFailure(nameof(birthdate), m);
+        });    
+            
+        RuleFor(e => e.IpAddress).Custom((ip, context) =>
+        {
+            if (!string.IsNullOrWhiteSpace(ip)) return;
         
-        RuleFor(e => e.IpAddress)
-            .NotEmpty().WithMessage("ip address cannot be empty")
-            .Must(ValidIpAddress!).WithMessage("ip address not valid");
+            var m = $"{ip}{EmptyMessage}";
+            logger.Error(m);
+            context.AddFailure(nameof(ip), m);
+        });
+
+        RuleFor(e => e.IpAddress).Custom((ip, context) =>
+        {
+            if (System.Net.IPAddress.TryParse(ip, out _)) return;
+
+            var m = $"{ip} address{EmptyMessage}";
+            logger.Error(m);
+            context.AddFailure(nameof(ip), m);
+        });
     }
 
     //ReSharper disable once ClassNeverInstantiated.Global
@@ -50,16 +99,4 @@ public class EmployeeValidator : AbstractValidator<EmployeeDto>
             });
         } 
     }
-    
-    private static bool ValidDate(string inputDate) =>
-
-        DateTime.TryParseExact(
-            inputDate, 
-            "yyyy/MM/dd",
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.None,
-            out var validFormatDate) 
-        && validFormatDate < DateTime.Today;
-    
-    private bool ValidIpAddress(string ip) => System.Net.IPAddress.TryParse(ip, out _);
 }

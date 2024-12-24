@@ -22,7 +22,7 @@ public class Employee
     public string BirthDate { get; set; }
     
     [Required]
-    public string? IpAddress { get; set; }
+    public string IpAddress { get; set; }
     
     public string? IpCountryCode { get; set; }
     
