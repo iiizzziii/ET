@@ -214,7 +214,7 @@ public class EmployeesController(
             await dbContext.Positions.AddRangeAsync(newPositions);
             await dbContext.SaveChangesAsync();
 
-            return Ok($"positions added: {newPositions.Select(n => n.PositionName)}");
+            return Ok($"added {newPositions.Count} position(s)");
         }
         catch (Exception e)
         {
@@ -229,6 +229,7 @@ public class EmployeesController(
     {
         return await dbContext.Employees
             .Select(e => e.EmployeeId)
+            .OrderBy(id => id)
             .ToArrayAsync();
     }
 }

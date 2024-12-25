@@ -6,8 +6,6 @@ public class Position
 {
     [Key]
     public int PositionId { get; set; }
-    
-    [Required]
     public string PositionName { get; set; }
     public ICollection<Employee> Employees { get; set; }
 }
