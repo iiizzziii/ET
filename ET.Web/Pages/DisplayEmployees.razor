@@ -1,0 +1,78 @@
+@page "/employees"
+@using ET.Dto
+@using ET.Web.Services
+@inject IEmployeeService EmployeeService
+@* @rendermode @(new InteractiveServerRenderMode(prerender: false)) *@
+
+<h3>Employee List</h3>
+
+@if (_employees == null)
+{
+    <p>Loading employees...</p>
+}
+else if (!_employees.Any())
+{
+    <p>No employees found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Position</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var employee in _employees)
+        {
+            <tr>
+                <td>@employee.Name</td>
+                <td>@employee.Surname</td>
+                <td>@employee.Position</td>
+                <td>
+                    @* <button class="btn btn-primary" @onclick="() => EditEmployee(employee.Id)">Edit</button> *@
+                    @* <button class="btn btn-danger" @onclick="() => DeleteEmployee(employee.Id)">Delete</button> *@
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@* <button class="btn btn-success" @onclick="AddEmployee">Add Employee</button> *@
+
+@code {
+    [Parameter]
+    public IEnumerable<EmployeeDto>? _employees { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _employees = await EmployeeService.GetEmployees();
+    }
+
+    // private async Task EditEmployee(int id)
+    // {
+    //     // Navigate to edit page
+    //     NavigationManager.NavigateTo($"/employees/edit/{id}");
+    // }
+    //
+    // private async Task DeleteEmployee(int id)
+    // {
+    //     if (await EmployeeService.DeleteEmployeeAsync(id))
+    //     {
+    //         Employees = await EmployeeService.GetEmployeesAsync(); // Refresh the list
+    //     }
+    //     else
+    //     {
+    //         // Handle delete failure
+    //         Console.WriteLine("Failed to delete employee.");
+    //     }
+    // }
+    //
+    // private void AddEmployee()
+    // {
+    //     NavigationManager.NavigateTo("/employees/add");
+    // }
+}

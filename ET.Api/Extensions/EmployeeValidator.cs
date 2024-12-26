@@ -1,5 +1,5 @@
 using ET.Api.Data;
-using ET.Api.Models;
+using ET.Dto;
 using FluentValidation;
 using System.Globalization;
 using ILogger = Serilog.ILogger;
@@ -89,7 +89,7 @@ public class EmployeeValidator : AbstractValidator<EmployeeDto>
     }
 
     //ReSharper disable once ClassNeverInstantiated.Global
-    public class EmployeeCollectionValidator : AbstractValidator<EmployeesCollection> 
+    public class EmployeeCollectionValidator : AbstractValidator<EmployeesDto> 
     {
         public EmployeeCollectionValidator(IValidator<EmployeeDto> employeeValidator) 
         {

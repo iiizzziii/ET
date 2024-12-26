@@ -17,5 +17,8 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\ET.Dto\ET.Dto.csproj" />
+    </ItemGroup>
 
 </Project>

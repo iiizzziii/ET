@@ -1,6 +1,7 @@
 using ET.Api.Data;
 using ET.Api.Models;
 using ET.Api.Services;
+using ET.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ILogger = Serilog.ILogger;
@@ -148,7 +149,7 @@ public class EmployeesController(
     [HttpPost]
     [Route("add/json")]
     public async Task<IActionResult> AddEmployees(
-        [FromBody] EmployeesCollection employees)
+        [FromBody] EmployeesDto employees)
     {
         try
         {
@@ -187,7 +188,7 @@ public class EmployeesController(
     
     [HttpPost("add/json/positions")]
     public async Task<ActionResult> AddPositions(
-        [FromBody] PositionNamesDto positions)
+        [FromBody] PositionsDto positions)
     {
         var incomingPositions = positions.Positions
             .Where(n => !string.IsNullOrWhiteSpace(n))
