@@ -1,4 +1,4 @@
-using ET.Api.Models;
+using ET.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ET.Api.Data;

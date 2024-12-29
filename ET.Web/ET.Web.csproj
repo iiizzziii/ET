@@ -11,7 +11,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.11" PrivateAssets="all"/>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\ET.Dto\ET.Dto.csproj" />
+      <ProjectReference Include="..\ET.Models\ET.Models.csproj" />
     </ItemGroup>
 
 </Project>

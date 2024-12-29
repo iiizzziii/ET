@@ -1,17 +1,14 @@
 @page "/employees"
-@using ET.Dto
+@using ET.Models
 @using ET.Web.Services
 @inject IEmployeeService EmployeeService
-@* @rendermode @(new InteractiveServerRenderMode(prerender: false)) *@
 
-<h3>Employee List</h3>
+<h3>Employees</h3>
 
-@if (_employees == null)
-{
+@if (employees == null) {
     <p>Loading employees...</p>
 }
-else if (!_employees.Any())
-{
+else if (!employees.Any()) {
     <p>No employees found.</p>
 }
 else
@@ -21,19 +18,24 @@ else
         <tr>
             <th>Name</th>
             <th>Surname</th>
-            <th>Position</th>
+            <th>Birth date</th>
+            @* <th>Position</th> *@
+            <th>Ip address</th>
+            <th>Delete</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var employee in _employees)
+        @foreach (var employee in employees)
         {
-            <tr>
+            <tr @key="employee.EmployeeId">
                 <td>@employee.Name</td>
                 <td>@employee.Surname</td>
-                <td>@employee.Position</td>
+                <td>@employee.BirthDate</td>
+                @* <td>@employee.Position</td> *@
+                <td>@employee.IpAddress</td>
                 <td>
                     @* <button class="btn btn-primary" @onclick="() => EditEmployee(employee.Id)">Edit</button> *@
-                    @* <button class="btn btn-danger" @onclick="() => DeleteEmployee(employee.Id)">Delete</button> *@
+                    <button class="btn btn-danger" @onclick="() => DeleteEmployee(employee.EmployeeId)">X</button>
                 </td>
             </tr>
         }
@@ -43,13 +45,14 @@ else
 
 @* <button class="btn btn-success" @onclick="AddEmployee">Add Employee</button> *@
 
+@* ReSharper disable once InconsistentNaming *@
 @code {
     [Parameter]
-    public IEnumerable<EmployeeDto>? _employees { get; set; }
-
+    public IEnumerable<Employee>? employees { get; set; }
+    
     protected override async Task OnInitializedAsync()
     {
-        _employees = await EmployeeService.GetEmployees();
+        employees = await EmployeeService.GetEmployees();
     }
 
     // private async Task EditEmployee(int id)
@@ -58,18 +61,19 @@ else
     //     NavigationManager.NavigateTo($"/employees/edit/{id}");
     // }
     //
-    // private async Task DeleteEmployee(int id)
-    // {
-    //     if (await EmployeeService.DeleteEmployeeAsync(id))
-    //     {
-    //         Employees = await EmployeeService.GetEmployeesAsync(); // Refresh the list
-    //     }
-    //     else
-    //     {
-    //         // Handle delete failure
-    //         Console.WriteLine("Failed to delete employee.");
-    //     }
-    // }
+    private async Task DeleteEmployee(int id)
+    {
+        Console.WriteLine($"deleting {id}");
+        
+        if (await EmployeeService.DeleteEmployee(id))
+        {
+            employees = await EmployeeService.GetEmployees();
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete employee.");
+        }
+    }
     //
     // private void AddEmployee()
     // {

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ET.Api.Models;
+namespace ET.Models;
 
 #pragma warning disable CS8618
 

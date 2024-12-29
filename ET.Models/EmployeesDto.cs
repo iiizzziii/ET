@@ -1,4 +1,4 @@
-namespace ET.Dto;
+namespace ET.Models;
 
 #pragma warning disable CS8618 
 

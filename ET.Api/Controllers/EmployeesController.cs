@@ -1,7 +1,6 @@
 using ET.Api.Data;
-using ET.Api.Models;
 using ET.Api.Services;
-using ET.Dto;
+using ET.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ILogger = Serilog.ILogger;
@@ -35,16 +34,16 @@ public class EmployeesController(
     }
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees()
+    public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
     {
-        return await dbContext.Employees
-            .Include(e => e.Position)
-            .Select(e => new EmployeeDto {
-                Name = e.Name,
-                Surname = e.Surname,
-                BirthDate = e.BirthDate,
-                Position = e.Position!.PositionName,
-                IpAddress = e.IpAddress }).ToListAsync();
+        return await dbContext.Employees.ToListAsync();
+            // .Include(e => e.Position)
+            // .Select(e => new Employee {
+            //     Name = e.Name,
+            //     Surname = e.Surname,
+            //     BirthDate = e.BirthDate,
+            //     Position = e.Position,
+            //     IpAddress = e.IpAddress }).ToListAsync();
     }
     
     [HttpPut("{id:int}")]

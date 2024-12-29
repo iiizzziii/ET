@@ -1,5 +1,5 @@
 using System.Net.Http.Json;
-using ET.Dto;
+using ET.Models;
 
 namespace ET.Web.Services;
 
@@ -22,11 +22,25 @@ public class EmployeeService(HttpClient httpClient) : IEmployeeService
     //     }
     // }
 
-    public async Task<IEnumerable<EmployeeDto>?> GetEmployees()
+    public async Task<IEnumerable<Employee>?> GetEmployees()
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<IEnumerable<EmployeeDto>>("api/employees");
+            return await httpClient.GetFromJsonAsync<IEnumerable<Employee>>("api/employees");
+        }
+        catch (Exception e) {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<bool> DeleteEmployee(int id)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"api/employees/{id}");
+
+            return response.IsSuccessStatusCode;
         }
         catch (Exception e) {
             Console.WriteLine(e);

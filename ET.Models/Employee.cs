@@ -2,15 +2,15 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ET.Api.Models;
+namespace ET.Models;
 
 #pragma warning disable CS8618
 
 [SuppressMessage("ReSharper", "EntityFramework.ModelValidation.UnlimitedStringLength")]
 public class Employee
 {
-    [Key]
-    public int EmployeeId { get; init; }
+    [Key] // ReSharper disable once PropertyCanBeMadeInitOnly.Global
+    public int EmployeeId { get; set; }
     
     [ForeignKey(nameof(Position))] // ReSharper disable once PropertyCanBeMadeInitOnly.Global
     public int? PositionId { get; set; }

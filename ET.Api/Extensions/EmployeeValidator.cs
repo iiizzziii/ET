@@ -1,5 +1,5 @@
 using ET.Api.Data;
-using ET.Dto;
+using ET.Models;
 using FluentValidation;
 using System.Globalization;
 using ILogger = Serilog.ILogger;

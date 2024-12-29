@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ET.Api", "ET.Api\ET.Api.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ET.Web", "ET.Web\ET.Web.csproj", "{E470B889-824E-4BDC-9531-D05DA28D170B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ET.Dto", "ET.Dto\ET.Dto.csproj", "{B82C79BF-A178-48D1-B7A7-80B0B5C12022}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ET.Models", "ET.Models\ET.Models.csproj", "{B82C79BF-A178-48D1-B7A7-80B0B5C12022}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
