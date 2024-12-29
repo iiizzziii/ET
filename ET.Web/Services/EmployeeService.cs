@@ -34,6 +34,30 @@ public class EmployeeService(HttpClient httpClient) : IEmployeeService
         }
     }
 
+    public async Task<bool> UpdateEmployee(Employee employee)
+    {
+        try
+        {
+            // update models
+            var updateEmployee = new EmployeeDto
+            {
+                Name = employee.Name,
+                Surname = employee.Surname,
+                BirthDate = employee.BirthDate,
+                Position = employee.Position.PositionName,
+                IpAddress = employee.IpAddress,
+            };
+            
+            var response = await httpClient.PutAsJsonAsync($"api/employees/{employee.EmployeeId}", updateEmployee);
+
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception e) {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
     public async Task<bool> DeleteEmployee(int id)
     {
         try

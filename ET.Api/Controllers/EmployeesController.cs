@@ -36,14 +36,9 @@ public class EmployeesController(
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
     {
-        return await dbContext.Employees.ToListAsync();
-            // .Include(e => e.Position)
-            // .Select(e => new Employee {
-            //     Name = e.Name,
-            //     Surname = e.Surname,
-            //     BirthDate = e.BirthDate,
-            //     Position = e.Position,
-            //     IpAddress = e.IpAddress }).ToListAsync();
+        return await dbContext.Employees
+            .Include(e => e.Position)
+            .ToListAsync();
     }
     
     [HttpPut("{id:int}")]

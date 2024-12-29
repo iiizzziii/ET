@@ -21,6 +21,7 @@ else
             <th>Birth date</th>
             @* <th>Position</th> *@
             <th>Ip address</th>
+            <th>Edit</th>
             <th>Delete</th>
         </tr>
         </thead>
@@ -34,7 +35,7 @@ else
                 @* <td>@employee.Position</td> *@
                 <td>@employee.IpAddress</td>
                 <td>
-                    @* <button class="btn btn-primary" @onclick="() => EditEmployee(employee.Id)">Edit</button> *@
+                    <button class="btn btn-primary" @onclick="() => ShowEditModal(employee)">Edit</button>
                     <button class="btn btn-danger" @onclick="() => DeleteEmployee(employee.EmployeeId)">X</button>
                 </td>
             </tr>
@@ -43,24 +44,102 @@ else
     </table>
 }
 
+<!-- Modal for Editing -->
+@if (isEditModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Employee</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEditModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" id="name" class="form-control" @bind="editEmployee.Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="position" class="form-label">Surname</label>
+                        <input type="text" id="position" class="form-control" @bind="editEmployee.Surname" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="position" class="form-label">Birth date</label>
+                        <input type="text" id="position" class="form-control" @bind="editEmployee.BirthDate" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="position" class="form-label">Position</label>
+                        <input type="text" id="position" class="form-control" @bind="editEmployee.Position.PositionName" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="ipAddress" class="form-label">IP Address</label>
+                        <input type="text" id="ipAddress" class="form-control" @bind="editEmployee.IpAddress" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseEditModal">Cancel</button>
+                    <button class="btn btn-primary" @onclick="UpdateEmployee">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @* <button class="btn btn-success" @onclick="AddEmployee">Add Employee</button> *@
 
 @* ReSharper disable once InconsistentNaming *@
 @code {
     [Parameter]
     public IEnumerable<Employee>? employees { get; set; }
+
+    private Employee editEmployee;
+    private bool isEditModalVisible;
     
     protected override async Task OnInitializedAsync()
     {
         employees = await EmployeeService.GetEmployees();
     }
 
-    // private async Task EditEmployee(int id)
-    // {
-    //     // Navigate to edit page
-    //     NavigationManager.NavigateTo($"/employees/edit/{id}");
-    // }
-    //
+    private void ShowEditModal(Employee employee)
+    {
+        isEditModalVisible = true;
+        editEmployee = new Employee
+        {
+            EmployeeId = employee.EmployeeId,
+            Name = employee.Name,
+            Surname = employee.Surname,
+            BirthDate = employee.BirthDate,
+            Position = employee.Position,
+            IpAddress = employee.IpAddress
+        };
+    }
+
+    private void CloseEditModal()
+    {
+        isEditModalVisible = false;
+        editEmployee = new Employee();
+    }
+    
+    private async Task UpdateEmployee()
+    {
+        var update = await EmployeeService.UpdateEmployee(editEmployee);
+        if (update)
+        {
+            var employee = employees.FirstOrDefault(e => e.EmployeeId == editEmployee.EmployeeId);
+            if (employee != null)
+            {
+                employee.Name = editEmployee.Name;
+                employee.Position = editEmployee.Position;
+                employee.IpAddress = editEmployee.IpAddress;
+            }
+            CloseEditModal();
+        }
+        else
+        {
+            Console.WriteLine("Update failed.");
+        }
+    }
+    
     private async Task DeleteEmployee(int id)
     {
         Console.WriteLine($"deleting {id}");
