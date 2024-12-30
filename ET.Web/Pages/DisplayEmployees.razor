@@ -1,4 +1,5 @@
 @page "/employees"
+@using System.ComponentModel.DataAnnotations
 @using ET.Models
 @using ET.Web.Services
 @inject IEmployeeService EmployeeService
@@ -19,10 +20,9 @@ else
             <th>Name</th>
             <th>Surname</th>
             <th>Birth date</th>
-            @* <th>Position</th> *@
+            <th>Position</th>
             <th>Ip address</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -32,7 +32,7 @@ else
                 <td>@employee.Name</td>
                 <td>@employee.Surname</td>
                 <td>@employee.BirthDate</td>
-                @* <td>@employee.Position</td> *@
+                <td>@employee.Position?.PositionName</td>
                 <td>@employee.IpAddress</td>
                 <td>
                     <button class="btn btn-primary" @onclick="() => ShowEditModal(employee)">Edit</button>
@@ -44,7 +44,6 @@ else
     </table>
 }
 
-<!-- Modal for Editing -->
 @if (isEditModalVisible)
 {
     <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
@@ -54,36 +53,71 @@ else
                     <h5 class="modal-title">Edit Employee</h5>
                     <button type="button" class="btn-close" @onclick="CloseEditModal"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" id="name" class="form-control" @bind="editEmployee.Name" />
+                <EditForm Model="editEmployee" OnValidSubmit="UpdateEmployee">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <InputText id="name" class="form-control" @bind-Value="editEmployee.Name" />
+                            <ValidationMessage For="@(() => editEmployee.Name)" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="surname" class="form-label">Surname</label>
+                            <InputText id="surname" class="form-control" @bind-Value="editEmployee.Surname" />
+                            <ValidationMessage For="@(() => editEmployee.Surname)" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="birthDate" class="form-label">Birth Date</label>
+                            <InputText id="birthDate" class="form-control" @bind-Value="editEmployee.BirthDate" />
+                            <ValidationMessage For="@(() => editEmployee.BirthDate)" />
+                            @if (validationErrors.ContainsKey(nameof(editEmployee.BirthDate)))
+                            {
+                                <div class="text-danger">
+                                    @foreach (var error in validationErrors[nameof(editEmployee.BirthDate)])
+                                    {
+                                        <div>@error</div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div class="mb-3">
+                            <label for="position" class="form-label">Position</label>
+                            @* <InputText id="position" class="form-control" @bind-Value="editEmployee.Position" /> *@
+                            <InputSelect id="position" class="form-control" @bind-Value="editEmployee.Position">
+                                <option value="">Select a Position</option>
+                                @foreach (var position in positions)
+                                {
+                                    <option value="@position">@position</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => editEmployee.Position)" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="ipAddress" class="form-label">IP Address</label>
+                            <InputText id="ipAddress" class="form-control" @bind-Value="editEmployee.IpAddress" />
+                            <ValidationMessage For="@(() => editEmployee.IpAddress)" />
+                            @if (validationErrors.ContainsKey(nameof(editEmployee.IpAddress)))
+                            {
+                                <div class="text-danger">
+                                    @foreach (var error in validationErrors[nameof(editEmployee.IpAddress)])
+                                    {
+                                        <div>@error</div>
+                                    }
+                                </div>
+                            }
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="position" class="form-label">Surname</label>
-                        <input type="text" id="position" class="form-control" @bind="editEmployee.Surname" />
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="position" class="form-label">Birth date</label>
-                        <input type="text" id="position" class="form-control" @bind="editEmployee.BirthDate" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="position" class="form-label">Position</label>
-                        <input type="text" id="position" class="form-control" @bind="editEmployee.Position.PositionName" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="ipAddress" class="form-label">IP Address</label>
-                        <input type="text" id="ipAddress" class="form-control" @bind="editEmployee.IpAddress" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="CloseEditModal">Cancel</button>
-                    <button class="btn btn-primary" @onclick="UpdateEmployee">Save</button>
-                </div>
+                </EditForm>
             </div>
         </div>
     </div>
 }
+
 
 @* <button class="btn btn-success" @onclick="AddEmployee">Add Employee</button> *@
 
@@ -91,53 +125,70 @@ else
 @code {
     [Parameter]
     public IEnumerable<Employee>? employees { get; set; }
-
-    private Employee editEmployee;
+    private IEnumerable<string> positions;
+    private EmployeeForm editEmployee;
     private bool isEditModalVisible;
+    private Dictionary<string, List<string>> validationErrors = new();
     
     protected override async Task OnInitializedAsync()
     {
         employees = await EmployeeService.GetEmployees();
+        positions = await EmployeeService.GetPositions();
     }
 
     private void ShowEditModal(Employee employee)
     {
         isEditModalVisible = true;
-        editEmployee = new Employee
+        editEmployee = new EmployeeForm
         {
-            EmployeeId = employee.EmployeeId,
+            Id = employee.EmployeeId,
             Name = employee.Name,
             Surname = employee.Surname,
             BirthDate = employee.BirthDate,
-            Position = employee.Position,
+            Position = employee.Position.PositionName,
             IpAddress = employee.IpAddress
         };
+        validationErrors.Clear();
     }
 
     private void CloseEditModal()
     {
         isEditModalVisible = false;
-        editEmployee = new Employee();
+        // editEmployee = new Employee();
     }
     
     private async Task UpdateEmployee()
     {
-        var update = await EmployeeService.UpdateEmployee(editEmployee);
-        if (update)
+        var validationResults = new List<ValidationResult>();
+        var validationContext = new ValidationContext(editEmployee, serviceProvider: null, items: null);
+    
+        if (!Validator.TryValidateObject(editEmployee, validationContext, validationResults, true))
         {
-            var employee = employees.FirstOrDefault(e => e.EmployeeId == editEmployee.EmployeeId);
-            if (employee != null)
+            validationErrors.Clear();
+            foreach (var validationResult in validationResults)
             {
-                employee.Name = editEmployee.Name;
-                employee.Position = editEmployee.Position;
-                employee.IpAddress = editEmployee.IpAddress;
+                foreach (var memberName in validationResult.MemberNames)
+                {
+                    if (!validationErrors.ContainsKey(memberName))
+                    {
+                        validationErrors[memberName] = new List<string>();
+                    }
+                    validationErrors[memberName].Add(validationResult.ErrorMessage);
+                }
             }
-            CloseEditModal();
+            return; // Do not proceed with the backend request
         }
-        else
+        
+        try
         {
-            Console.WriteLine("Update failed.");
+            await EmployeeService.UpdateEmployee(editEmployee);
+            employees = await EmployeeService.GetEmployees();
+            isEditModalVisible = false;
+            StateHasChanged();
         }
+        catch (Exception e) {
+            Console.WriteLine(e);
+            throw; }
     }
     
     private async Task DeleteEmployee(int id)

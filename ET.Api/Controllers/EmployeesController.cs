@@ -227,4 +227,12 @@ public class EmployeesController(
             .OrderBy(id => id)
             .ToArrayAsync();
     }
+
+    [HttpGet("positions")]
+    public async Task<ActionResult<IEnumerable<string>>> GetPositions()
+    {
+        return await dbContext.Positions
+            .Select(p => p.PositionName)
+            .ToListAsync();
+    }
 }

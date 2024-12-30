@@ -28,13 +28,10 @@ public class EmployeeService(HttpClient httpClient) : IEmployeeService
         {
             return await httpClient.GetFromJsonAsync<IEnumerable<Employee>>("api/employees");
         }
-        catch (Exception e) {
-            Console.WriteLine(e);
-            throw;
-        }
+        catch (Exception e) { Console.WriteLine(e); throw; }
     }
 
-    public async Task<bool> UpdateEmployee(Employee employee)
+    public async Task<bool> UpdateEmployee(EmployeeForm employee)
     {
         try
         {
@@ -44,18 +41,15 @@ public class EmployeeService(HttpClient httpClient) : IEmployeeService
                 Name = employee.Name,
                 Surname = employee.Surname,
                 BirthDate = employee.BirthDate,
-                Position = employee.Position.PositionName,
+                Position = employee.Position,
                 IpAddress = employee.IpAddress,
             };
             
-            var response = await httpClient.PutAsJsonAsync($"api/employees/{employee.EmployeeId}", updateEmployee);
+            var response = await httpClient.PutAsJsonAsync($"api/employees/{employee.Id}", updateEmployee);
 
             return response.IsSuccessStatusCode;
         }
-        catch (Exception e) {
-            Console.WriteLine(e);
-            throw;
-        }
+        catch (Exception e) { Console.WriteLine(e); throw; }
     }
     
     public async Task<bool> DeleteEmployee(int id)
@@ -66,9 +60,15 @@ public class EmployeeService(HttpClient httpClient) : IEmployeeService
 
             return response.IsSuccessStatusCode;
         }
-        catch (Exception e) {
-            Console.WriteLine(e);
-            throw;
+        catch (Exception e) { Console.WriteLine(e); throw; }
+    }
+
+    public async Task<IEnumerable<string>?> GetPositions()
+    {
+        try
+        {
+            return await httpClient.GetFromJsonAsync<IEnumerable<string>>("api/employees/positions");
         }
+        catch (Exception e) { Console.WriteLine(e); throw; }
     }
 }
