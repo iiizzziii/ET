@@ -1,5 +1,6 @@
 using ET.Models;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace ET.Web.Services;
 
@@ -7,23 +8,6 @@ namespace ET.Web.Services;
 
 public class EmployeeService(HttpClient httpClient) : IEmployeeService
 {
-    // public async Task<EmployeeDto?> GetEmployee(int id)
-    // {
-    //     try
-    //     {
-    //         var response = await httpClient.GetAsync($"api/employees/{id}");
-    //         if (response.IsSuccessStatusCode)
-    //         {
-    //             return await response.Content.ReadFromJsonAsync<EmployeeDto>();
-    //         }
-    //         throw new Exception(await response.Content.ReadAsStringAsync());
-    //     }
-    //     catch (Exception e) {
-    //         Console.WriteLine(e);
-    //         throw;
-    //     }
-    // }
-
     public async Task<IEnumerable<Employee>> GetEmployees()
     {
         try
@@ -93,4 +77,35 @@ public class EmployeeService(HttpClient httpClient) : IEmployeeService
         }
         catch (Exception e) { Console.WriteLine(e); throw; }
     }
+
+    public async Task<HttpResponseMessage> AddEmployeesJson(EmployeesDto json)
+    {
+        try
+        {
+            return await httpClient.PostAsJsonAsync("api/employees/add/json", json);
+        }
+        catch (Exception e) { Console.WriteLine(e); throw; }
+    }
+
+    public async Task<HttpResponseMessage> AddPositionsJson(PositionsDto json)
+    {
+        try
+        {
+            return await httpClient.PostAsJsonAsync("api/employees/add/json/positions", json);
+        }
+        catch (Exception e) { Console.WriteLine(e); throw; }
+    }
+    
+    // public async Task<EmployeeDto?> GetEmployee(int id)
+    // {
+    //     try
+    //     {
+    //         var response = await httpClient.GetAsync($"api/employees/{id}");
+    //         if (response.IsSuccessStatusCode)
+    //         {
+    //             return await response.Content.ReadFromJsonAsync<EmployeeDto>();
+    //         }
+    //         throw new Exception(await response.Content.ReadAsStringAsync());
+    //     } catch (Exception e) { Console.WriteLine(e); throw; }
+    // }
 }

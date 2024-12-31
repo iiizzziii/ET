@@ -10,4 +10,6 @@ public interface IEmployeeService
     Task<bool> DeleteEmployee(int id);
     Task<IEnumerable<string>> GetPositions();
     Task<bool> AddEmployee(EmployeeForm employee);
+    Task<HttpResponseMessage> AddEmployeesJson(EmployeesDto json);
+    Task<HttpResponseMessage> AddPositionsJson(PositionsDto json);
 }

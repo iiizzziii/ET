@@ -204,7 +204,7 @@ public class EmployeesController(
                 .Select(p => new Position { PositionName = p })
                 .ToList();
 
-            if (newPositions.Count.Equals(0)) return Ok("no new positions to add");
+            if (newPositions.Count.Equals(0)) return NoContent();
             
             await dbContext.Positions.AddRangeAsync(newPositions);
             await dbContext.SaveChangesAsync();

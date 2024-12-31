@@ -1,0 +1,97 @@
+@page "/json-employees"
+@using ET.Web.Services
+@using System.Text.Json
+@using ET.Models
+
+@inject IEmployeeService EmployeeService
+@inject NavigationManager NavigationManager
+
+<h3>Upload Employees</h3>
+
+<div class="alert alert-info">
+    Drag and drop a JSON file containing employee data into the drop area below.
+</div>
+
+<div>
+    <textarea class="form-control" rows="10" @bind="jsonInput" placeholder="Paste JSON array of employees here"></textarea>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="text-danger mt-2">@errorMessage</div>
+    }
+    <button class="btn btn-primary mt-2" @onclick="HandleUpload">Upload</button>
+</div>
+
+@code {
+    private string jsonInput = string.Empty;
+    private string? errorMessage;
+    // private string? employeesJson;
+
+    private async Task HandleUpload()
+    {
+        errorMessage = null; // Clear previous errors
+
+        if (string.IsNullOrWhiteSpace(jsonInput))
+        {
+            errorMessage = "Please provide valid JSON input.";
+            return;
+        }
+
+        try
+        {
+            // Deserialize JSON to validate
+            // var employees = JsonSerializer.Deserialize<List<EmployeeViewModel>>(jsonInput, new JsonSerializerOptions
+            // {
+            //     PropertyNameCaseInsensitive = true
+            // });
+            //
+            // if (employees == null || employees.Count == 0)
+            // {
+            //     errorMessage = "No employees found in the input.";
+            //     return;
+            // }
+
+            var employees = JsonSerializer.Deserialize<EmployeesDto>(jsonInput,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            // Send to backend
+            var response = await EmployeeService.AddEmployeesJson(employees);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonSerializer.Deserialize<ValidationErrorResponse>(errorContent);
+                if (errorResponse?.Errors != null)
+                {
+                    errorMessage = string.Join("; ", errorResponse.Errors.SelectMany(e => e.Value));
+                }
+                else
+                {
+                    errorMessage = "Failed to upload employees. Please check your input.";
+                }
+                return;
+            }
+
+            // On success
+            NavigationManager.NavigateTo("/employees");
+        }
+        catch (JsonException)
+        {
+            errorMessage = "Invalid JSON format.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+    
+    public class ValidationErrorResponse
+    {
+        public Dictionary<string, List<string>> Errors { get; set; }
+    }
+}
+
+
+
