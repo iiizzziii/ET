@@ -1,3 +1,4 @@
+@page "/"
 @page "/employees"
 @using System.ComponentModel.DataAnnotations
 @using ET.Models
@@ -35,7 +36,7 @@ else
                 <td>@employee.Position?.PositionName</td>
                 <td>@employee.IpAddress</td>
                 <td>
-                    <button class="btn btn-primary" @onclick="() => ShowEditModal(employee)">Edit</button>
+                    <button class="btn btn-primary" @onclick="() => ShowModal(employee)">Edit</button>
                     <button class="btn btn-danger" @onclick="() => DeleteEmployee(employee.EmployeeId)">X</button>
                 </td>
             </tr>
@@ -44,14 +45,14 @@ else
     </table>
 }
 
-@if (isEditModalVisible)
+@if (visibleModal)
 {
     <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Employee</h5>
-                    <button type="button" class="btn-close" @onclick="CloseEditModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
                 </div>
                 <EditForm Model="editEmployee" OnValidSubmit="UpdateEmployee">
                     <DataAnnotationsValidator />
@@ -83,7 +84,6 @@ else
                         </div>
                         <div class="mb-3">
                             <label for="position" class="form-label">Position</label>
-                            @* <InputText id="position" class="form-control" @bind-Value="editEmployee.Position" /> *@
                             <InputSelect id="position" class="form-control" @bind-Value="editEmployee.Position">
                                 <option value="">Select a Position</option>
                                 @foreach (var position in positions)
@@ -109,7 +109,7 @@ else
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </EditForm>
@@ -118,16 +118,12 @@ else
     </div>
 }
 
-
-@* <button class="btn btn-success" @onclick="AddEmployee">Add Employee</button> *@
-
-@* ReSharper disable once InconsistentNaming *@
 @code {
     [Parameter]
     public IEnumerable<Employee>? employees { get; set; }
     private IEnumerable<string> positions;
     private EmployeeForm editEmployee;
-    private bool isEditModalVisible;
+    private bool visibleModal;
     private Dictionary<string, List<string>> validationErrors = new();
     
     protected override async Task OnInitializedAsync()
@@ -136,7 +132,7 @@ else
         positions = await EmployeeService.GetPositions();
     }
 
-    private void ShowEditModal(Employee employee)
+    private void ShowModal(Employee employee)
     {
         editEmployee = new EmployeeForm
         {
@@ -148,14 +144,10 @@ else
             IpAddress = employee.IpAddress
         };
         validationErrors.Clear();
-        isEditModalVisible = true;
+        visibleModal = true;
     }
 
-    private void CloseEditModal()
-    {
-        isEditModalVisible = false;
-        // editEmployee = new Employee();
-    }
+    private void CloseModal() => visibleModal = false;
     
     private async Task UpdateEmployee()
     {
@@ -176,14 +168,14 @@ else
                     validationErrors[memberName].Add(validationResult.ErrorMessage);
                 }
             }
-            return; // Do not proceed with the backend request
+            return;
         }
         
         try
         {
             await EmployeeService.UpdateEmployee(editEmployee);
             employees = await EmployeeService.GetEmployees();
-            isEditModalVisible = false;
+            visibleModal = false;
             StateHasChanged();
         }
         catch (Exception e) { Console.WriteLine(e); throw; }
@@ -191,8 +183,6 @@ else
     
     private async Task DeleteEmployee(int id)
     {
-        Console.WriteLine($"deleting {id}");
-        
         if (await EmployeeService.DeleteEmployee(id))
         {
             employees = await EmployeeService.GetEmployees();
@@ -202,9 +192,4 @@ else
             Console.WriteLine("Failed to delete employee.");
         }
     }
-    //
-    // private void AddEmployee()
-    // {
-    //     NavigationManager.NavigateTo("/employees/add");
-    // }
 }
