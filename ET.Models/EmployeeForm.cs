@@ -8,19 +8,19 @@ public class EmployeeForm : IValidatableObject
     public int Id { get; init; }
 
     [Required(ErrorMessage = "Name is required.")]
-    public required string Name { get; set; }
+    public string Name { get; set; }
 
     [Required(ErrorMessage = "Surname is required.")]
-    public required string Surname { get; set; }
+    public string Surname { get; set; }
 
     [Required(ErrorMessage = "Birth Date is required.")]
-    public required string BirthDate { get; set; }
+    public string BirthDate { get; set; }
 
     [Required(ErrorMessage = "Position is required.")]
-    public required string Position { get; set; }
+    public string Position { get; set; }
 
     [Required(ErrorMessage = "IP Address is required.")]
-    public required string IpAddress { get; set; }
+    public string IpAddress { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -29,11 +29,17 @@ public class EmployeeForm : IValidatableObject
                 "yyyy/MM/dd",
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
-                out var validFormatDate) &&
-            validFormatDate < DateTime.Today)
+                out var dateTime))
         {
             yield return new ValidationResult(
-                "Birth date not a valid date in YYYY/MM/DD format",
+                "Birth date not in YYYY/MM/DD format",
+                [nameof(BirthDate)]);
+        }
+
+        if (dateTime > DateTime.Now)
+        {
+            yield return new ValidationResult(
+                "Birth date must be in past",
                 [nameof(BirthDate)]);
         }
 

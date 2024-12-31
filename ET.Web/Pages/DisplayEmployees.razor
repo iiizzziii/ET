@@ -138,7 +138,6 @@ else
 
     private void ShowEditModal(Employee employee)
     {
-        isEditModalVisible = true;
         editEmployee = new EmployeeForm
         {
             Id = employee.EmployeeId,
@@ -149,6 +148,7 @@ else
             IpAddress = employee.IpAddress
         };
         validationErrors.Clear();
+        isEditModalVisible = true;
     }
 
     private void CloseEditModal()
@@ -186,9 +186,7 @@ else
             isEditModalVisible = false;
             StateHasChanged();
         }
-        catch (Exception e) {
-            Console.WriteLine(e);
-            throw; }
+        catch (Exception e) { Console.WriteLine(e); throw; }
     }
     
     private async Task DeleteEmployee(int id)
