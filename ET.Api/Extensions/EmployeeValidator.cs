@@ -95,10 +95,7 @@ public class EmployeeValidator : AbstractValidator<EmployeeDto>
         {
             RuleForEach(e => e.Employees).SetValidator(employeeValidator);
             
-            // RuleFor(eC => eC.Employees).ForEach(e => 
-            // {
-            //     e.SetValidator(employeeValidator); 
-            // });
+            // RuleFor(eC => eC.Employees).ForEach(e => { e.SetValidator(employeeValidator); });
         } 
     }
 }
