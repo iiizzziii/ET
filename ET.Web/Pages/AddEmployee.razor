@@ -9,18 +9,18 @@
 
 <h3>Add Employee</h3>
 
-<EditForm EditContext="editContext" OnValidSubmit="HandleValidSubmit">
+<EditForm EditContext="_editContext" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="mb-3">
         <label for="name" class="form-label">Name</label>
-        <InputText id="name" class="form-control" @bind-Value="newEmployee.Name" />
-        <ValidationMessage For="@(() => newEmployee.Name)" />
-        @if (validationErrors.ContainsKey(nameof(newEmployee.Name)))
+        <InputText id="name" class="form-control" @bind-Value="_newEmployee.Name" />
+        <ValidationMessage For="@(() => _newEmployee.Name)" />
+        @if (validationErrors.ContainsKey(nameof(_newEmployee.Name)))
         {
             <div class="text-danger">
-                @foreach (var error in validationErrors[nameof(newEmployee.Name)])
+                @foreach (var error in validationErrors[nameof(_newEmployee.Name)])
                 {
                     <div>@error</div>
                 }
@@ -30,12 +30,12 @@
 
     <div class="mb-3">
         <label for="surname" class="form-label">Surname</label>
-        <InputText id="surname" class="form-control" @bind-Value="newEmployee.Surname" />
-        <ValidationMessage For="@(() => newEmployee.Surname)" />
-        @if (validationErrors.ContainsKey(nameof(newEmployee.Surname)))
+        <InputText id="surname" class="form-control" @bind-Value="_newEmployee.Surname" />
+        <ValidationMessage For="@(() => _newEmployee.Surname)" />
+        @if (validationErrors.ContainsKey(nameof(_newEmployee.Surname)))
         {
             <div class="text-danger">
-                @foreach (var error in validationErrors[nameof(newEmployee.Surname)])
+                @foreach (var error in validationErrors[nameof(_newEmployee.Surname)])
                 {
                     <div>@error</div>
                 }
@@ -45,12 +45,12 @@
 
     <div class="mb-3">
         <label for="birthdate" class="form-label">Birth Date</label>
-        <InputText id="birthdate" class="form-control" @bind-Value="newEmployee.BirthDate" />
-        <ValidationMessage For="@(() => newEmployee.BirthDate)" />
-        @if (validationErrors.ContainsKey(nameof(newEmployee.BirthDate)))
+        <InputText id="birthdate" class="form-control" @bind-Value="_newEmployee.BirthDate" />
+        <ValidationMessage For="@(() => _newEmployee.BirthDate)" />
+        @if (validationErrors.ContainsKey(nameof(_newEmployee.BirthDate)))
         {
             <div class="text-danger">
-                @foreach (var error in validationErrors[nameof(newEmployee.BirthDate)])
+                @foreach (var error in validationErrors[nameof(_newEmployee.BirthDate)])
                 {
                     <div>@error</div>
                 }
@@ -60,14 +60,14 @@
 
     <div class="mb-3">
         <label for="position" class="form-label">Position</label>
-        <InputSelect id="position" class="form-control" @bind-Value="newEmployee.Position">
+        <InputSelect id="position" class="form-control" @bind-Value="_newEmployee.Position">
             <option value="">Select a Position</option>
-            @foreach (var position in positions)
+            @foreach (var position in _positions)
             {
                 <option value="@position">@position</option>
             }
         </InputSelect>
-        <ValidationMessage For="@(() => newEmployee.Position)" />
+        <ValidationMessage For="@(() => _newEmployee.Position)" />
         @if (validationErrors.ContainsKey("Position"))
         {
             <div class="text-danger">
@@ -81,12 +81,12 @@
 
     <div class="mb-3">
         <label for="ipaddress" class="form-label">IP Address</label>
-        <InputText id="ipaddress" class="form-control" @bind-Value="newEmployee.IpAddress" />
-        <ValidationMessage For="@(() => newEmployee.IpAddress)" />
-        @if (validationErrors.ContainsKey(nameof(newEmployee.IpAddress)))
+        <InputText id="ipaddress" class="form-control" @bind-Value="_newEmployee.IpAddress" />
+        <ValidationMessage For="@(() => _newEmployee.IpAddress)" />
+        @if (validationErrors.ContainsKey(nameof(_newEmployee.IpAddress)))
         {
             <div class="text-danger">
-                @foreach (var error in validationErrors[nameof(newEmployee.IpAddress)])
+                @foreach (var error in validationErrors[nameof(_newEmployee.IpAddress)])
                 {
                     <div>@error</div>
                 }
@@ -96,70 +96,3 @@
 
     <button type="submit" class="btn btn-primary">Add Employee</button>
 </EditForm>
-
-@code {
-    private EmployeeForm newEmployee = new();
-    private Dictionary<string, List<string>> validationErrors = new();
-    private IEnumerable<string> positions;
-    private string? selectedPosition;
-    private EditContext editContext;
-
-    protected override async Task OnInitializedAsync()
-    {
-        positions = await EmployeeService.GetPositions();
-        editContext = new EditContext(newEmployee);
-    }
-
-    private async Task HandleValidSubmit()
-    {
-        validationErrors.Clear();
-        
-        // Assign selected position
-        if (!string.IsNullOrEmpty(selectedPosition))
-        {
-            newEmployee.Position = positions.FirstOrDefault(p => p == selectedPosition);
-        }
-
-        // Validate the model before sending to the backend
-        var validationResults = new List<ValidationResult>();
-        var validationContext = new ValidationContext(newEmployee);
-
-        if (!Validator.TryValidateObject(newEmployee, validationContext, validationResults, true))
-        {
-            foreach (var validationResult in validationResults)
-            {
-                foreach (var memberName in validationResult.MemberNames)
-                {
-                    if (!validationErrors.ContainsKey(memberName))
-                    {
-                        validationErrors[memberName] = new List<string>();
-                    }
-                    validationErrors[memberName].Add(validationResult.ErrorMessage);
-                }
-            }
-            return;
-        }
-
-        try
-        {
-            await EmployeeService.AddEmployee(newEmployee);
-            NavigationManager.NavigateTo("/employees");
-        }
-        catch (Exception e) { Console.WriteLine(e); throw; }
-        
-        // Send to backend
-        // var response = await EmployeeService.AddEmployee(newEmployee);
-        // if (!response.IsSuccessStatusCode)
-        // {
-        //     var errorContent = await response.Content.ReadAsStringAsync();
-        //     var errorResponse = JsonSerializer.Deserialize<ValidationErrorResponse>(errorContent);
-        //     if (errorResponse?.Errors != null)
-        //     {
-        //         validationErrors = errorResponse.Errors;
-        //     }
-        //     return;
-        // }
-        // Redirect after success
-        
-    }
-}

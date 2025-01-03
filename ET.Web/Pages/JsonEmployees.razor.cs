@@ -1,13 +1,13 @@
-using ET.Models;
 using System.Net;
 using System.Text.Json;
+using ET.Models;
 using Microsoft.AspNetCore.Components;
 
 #pragma warning disable CA1869
 
 namespace ET.Web.Pages;
 
-public partial class JsonPositions : ComponentBase
+public partial class JsonEmployees : ComponentBase
 {
     private bool _popupVisible;
     private string _jsonInput = string.Empty;
@@ -22,11 +22,11 @@ public partial class JsonPositions : ComponentBase
 
         try
         {
-            var positions = JsonSerializer.Deserialize<PositionsDto>(
+            var employees = JsonSerializer.Deserialize<EmployeesDto>(
                 _jsonInput, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        
-            var response = await EmployeeService.AddPositionsJson(positions!);
             
+            var response = await EmployeeService.AddEmployeesJson(employees!);
+
             if (response.StatusCode == HttpStatusCode.NoContent)
             {
                 _message = "Nothing to add, all positions already exist";

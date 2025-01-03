@@ -5,10 +5,7 @@
 @inject NavigationManager NavigationManager
 
 <h3>Upload Positions</h3>
-<div class="alert alert-info">
-    Drag and drop a JSON file containing positions into the drop area below.
-</div>
-
+<div class="alert alert-info">Copy content of a JSON file if containing positions.</div>
 <div>
     <textarea class="form-control" rows="10" @bind="_jsonInput" placeholder="Drag or copy here"></textarea>
     @if (!string.IsNullOrEmpty(_message))
@@ -48,51 +45,3 @@
         text-align: center;
     }
 </style>
-
-@* @code{ *@
-@*     private string jsonInput = string.Empty; *@
-@*     private string errorMessage = string.Empty; *@
-@* *@
-@*     private async Task HandleUpload() *@
-@*     { *@
-@*         if (string.IsNullOrWhiteSpace(jsonInput)) *@
-@*         { *@
-@*             errorMessage = "Please provide valid JSON input."; *@
-@*             return; *@
-@*         } *@
-@* *@
-@*         try *@
-@*         { *@
-@*             var positions = JsonSerializer.Deserialize<PositionsDto>( *@
-@*                 jsonInput, new JsonSerializerOptions { *@
-@*                     PropertyNameCaseInsensitive = true }); *@
-@*          *@
-@*             var response = await EmployeeService.AddPositionsJson(positions); *@
-@* *@
-@*             if (response.StatusCode == HttpStatusCode.NoContent) *@
-@*             { *@
-@*                 errorMessage = "Nothing to add, all positions already exist"; *@
-@*             } *@
-@*             else if (response.IsSuccessStatusCode) *@
-@*             { *@
-@*                 NavigationManager.NavigateTo("/employees"); *@
-@*             } *@
-@*             else *@
-@*             { *@
-@*                 var errorContent = await response.Content.ReadAsStringAsync(); *@
-@*                 var errorResponse = JsonSerializer.Deserialize<ValidationErrorResponse>(errorContent); *@
-@*                 errorMessage = errorResponse?.Errors != null ? string.Join( *@
-@*                         "; ", errorResponse.Errors.SelectMany(e => e.Value))  *@
-@*                     : "Failed to upload employees. Please check your input."; *@
-@*                 return; *@
-@*             } *@
-@*         } *@
-@*         catch (JsonException) { errorMessage = "Invalid JSON format."; } *@
-@*         catch (Exception ex) { errorMessage = $"An error occurred: {ex.Message}"; } *@
-@*     } *@
-@*      *@
-@*     public class ValidationErrorResponse *@
-@*     { *@
-@*         public Dictionary<string, List<string>> Errors { get; set; } *@
-@*     } *@
-@* } *@
