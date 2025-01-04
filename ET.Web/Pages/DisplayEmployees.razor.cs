@@ -1,6 +1,7 @@
-using System.ComponentModel.DataAnnotations;
 using ET.Models;
+using Blazored.Modal;
 using Microsoft.AspNetCore.Components;
+using System.ComponentModel.DataAnnotations;
 
 namespace ET.Web.Pages;
 
@@ -12,6 +13,8 @@ public partial class DisplayEmployees : ComponentBase
     private EmployeeForm editEmployee;
     private bool visibleModal;
     private Dictionary<string, List<string>> validationErrors = new();
+    // private bool visibleView;
+    private Employee? _viewEmployee;
     
     protected override async Task OnInitializedAsync()
     {
@@ -78,5 +81,21 @@ public partial class DisplayEmployees : ComponentBase
         {
             Console.WriteLine("Failed to delete employee.");
         }
+    }
+
+    private void ViewEmployeeDetails(Employee employee)
+    {
+        _viewEmployee = employee;
+        // visibleView = true;
+
+        var parameters = new ModalParameters { { nameof(ViewEmployee.Employee), employee } };
+
+        ModalService.Show<ViewEmployee>("Employee Details", parameters);
+    }
+
+    private void CloseView()
+    {
+        _viewEmployee = default;
+        // visibleView = false;
     }
 }

@@ -1,8 +1,7 @@
 @page "/"
 @page "/employees"
-@using System.ComponentModel.DataAnnotations
-@using ET.Models
 @using ET.Web.Services
+@inject IModalService ModalService
 @inject IEmployeeService EmployeeService
 
 <h3>Employees</h3>
@@ -30,8 +29,8 @@ else
         @foreach (var employee in employees)
         {
             <tr @key="employee.EmployeeId">
-                <td>@employee.Name</td>
-                <td>@employee.Surname</td>
+                <button class="btn btn-link" @onclick="() => ViewEmployeeDetails(employee)">@employee.Name</button>
+                <button class="btn btn-link" @onclick="() => ViewEmployeeDetails(employee)">@employee.Surname</button>
                 <td>@employee.BirthDate</td>
                 <td>@employee.Position?.PositionName</td>
                 <td>@employee.IpAddress</td>
@@ -52,7 +51,7 @@ else
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Employee</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseModal">×</button>
                 </div>
                 <EditForm Model="editEmployee" OnValidSubmit="UpdateEmployee">
                     <DataAnnotationsValidator />
@@ -117,79 +116,3 @@ else
         </div>
     </div>
 }
-
-@* @code { *@
-@*     [Parameter] *@
-@*     public IEnumerable<Employee>? employees { get; set; } *@
-@*     private IEnumerable<string> positions; *@
-@*     private EmployeeForm editEmployee; *@
-@*     private bool visibleModal; *@
-@*     private Dictionary<string, List<string>> validationErrors = new(); *@
-@*      *@
-@*     protected override async Task OnInitializedAsync() *@
-@*     { *@
-@*         employees = await EmployeeService.GetEmployees(); *@
-@*         positions = await EmployeeService.GetPositions(); *@
-@*     } *@
-@* *@
-@*     private void ShowModal(Employee employee) *@
-@*     { *@
-@*         editEmployee = new EmployeeForm *@
-@*         { *@
-@*             Id = employee.EmployeeId, *@
-@*             Name = employee.Name, *@
-@*             Surname = employee.Surname, *@
-@*             BirthDate = employee.BirthDate, *@
-@*             Position = employee.Position.PositionName, *@
-@*             IpAddress = employee.IpAddress *@
-@*         }; *@
-@*         validationErrors.Clear(); *@
-@*         visibleModal = true; *@
-@*     } *@
-@* *@
-@*     private void CloseModal() => visibleModal = false; *@
-@*      *@
-@*     private async Task UpdateEmployee() *@
-@*     { *@
-@*         var validationResults = new List<ValidationResult>(); *@
-@*         var validationContext = new ValidationContext(editEmployee, serviceProvider: null, items: null); *@
-@*      *@
-@*         if (!Validator.TryValidateObject(editEmployee, validationContext, validationResults, true)) *@
-@*         { *@
-@*             validationErrors.Clear(); *@
-@*             foreach (var validationResult in validationResults) *@
-@*             { *@
-@*                 foreach (var memberName in validationResult.MemberNames) *@
-@*                 { *@
-@*                     if (!validationErrors.ContainsKey(memberName)) *@
-@*                     { *@
-@*                         validationErrors[memberName] = new List<string>(); *@
-@*                     } *@
-@*                     validationErrors[memberName].Add(validationResult.ErrorMessage); *@
-@*                 } *@
-@*             } *@
-@*             return; *@
-@*         } *@
-@*          *@
-@*         try *@
-@*         { *@
-@*             await EmployeeService.UpdateEmployee(editEmployee); *@
-@*             employees = await EmployeeService.GetEmployees(); *@
-@*             visibleModal = false; *@
-@*             StateHasChanged(); *@
-@*         } *@
-@*         catch (Exception e) { Console.WriteLine(e); throw; } *@
-@*     } *@
-@*      *@
-@*     private async Task DeleteEmployee(int id) *@
-@*     { *@
-@*         if (await EmployeeService.DeleteEmployee(id)) *@
-@*         { *@
-@*             employees = await EmployeeService.GetEmployees(); *@
-@*         } *@
-@*         else *@
-@*         { *@
-@*             Console.WriteLine("Failed to delete employee."); *@
-@*         } *@
-@*     } *@
-@* } *@

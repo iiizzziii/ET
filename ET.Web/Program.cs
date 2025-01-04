@@ -1,3 +1,4 @@
+using Blazored.Modal;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using ET.Web;
@@ -10,6 +11,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(_ => new HttpClient 
     { BaseAddress = new Uri("http://localhost:5093") });
 
+builder.Services.AddBlazoredModal();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 await builder.Build().RunAsync();
