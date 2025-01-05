@@ -29,8 +29,12 @@ else
         @foreach (var employee in employees)
         {
             <tr @key="employee.EmployeeId">
-                <button class="btn btn-link" @onclick="() => ViewEmployeeDetails(employee)">@employee.Name</button>
-                <button class="btn btn-link" @onclick="() => ViewEmployeeDetails(employee)">@employee.Surname</button>
+                <td>
+                    <button class="btn btn-link" @onclick="() => ViewEmployeeDetails(employee)">@employee.Name</button>
+                </td>
+                <td>
+                    <button class="btn btn-link" @onclick="() => ViewEmployeeDetails(employee)">@employee.Surname</button>
+                </td>
                 <td>@employee.BirthDate</td>
                 <td>@employee.Position?.PositionName</td>
                 <td>@employee.IpAddress</td>

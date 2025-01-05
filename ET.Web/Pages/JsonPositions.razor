@@ -5,15 +5,84 @@
 @inject NavigationManager NavigationManager
 
 <h3>Upload Positions</h3>
-<div class="alert alert-info">Copy content of a JSON file if containing positions.</div>
-<div>
-    <textarea class="form-control" rows="10" @bind="_jsonInput" placeholder="Drag or copy here"></textarea>
-    @if (!string.IsNullOrEmpty(_message))
+@* <div class="alert alert-info">Copy content of a JSON file if containing positions.</div> *@
+@* <div> *@
+@*     <textarea class="form-control" rows="10" @bind="_jsonInput" placeholder="Drag or copy here"></textarea> *@
+@*     @if (!string.IsNullOrEmpty(_message)) *@
+@*     { *@
+@*         <div class="text-danger mt-2">@_message</div> *@
+@*     } *@
+@*     <button class="btn btn-primary mt-2" @onclick="UploadJson">Upload</button> *@
+@* </div> *@
+@* <div style="margin-bottom: 20px; display: flex"></div> *@
+
+<div class="drag-drop-zone">
+    <InputFile OnChange="@HandleFileSelected" accept=".json"/>
+    @if (!string.IsNullOrEmpty(_validationMessage))
     {
-        <div class="text-danger mt-2">@_message</div>
+        <div class="validation-message">
+            <p>@_validationMessage</p>
+        </div>
     }
-    <button class="btn btn-primary mt-2" @onclick="UploadJson">Upload</button>
+    @if (_positions != null)
+    {
+        <button @onclick="SendToBackend">Upload</button>
+    } 
+    <div class="response-content">
+        @if (_responseContent != null)
+        {
+            <div>
+                <h4>Response:</h4> 
+                <pre>@_responseContent</pre>
+            </div>
+        }
+    </div>
+
+    @* <button class="btn btn-primary mt-2" @onclick="UploadJson">Upload</button> *@
 </div>
+
+<style>
+    .drag-drop-zone {
+        width: 100%;
+        max-width: 400px;
+        height: 200px;
+        border: 2px dashed #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin: auto;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .drag-drop-zone:hover {
+        border-color: #007bff;
+        background-color: #f7f9ff;
+    }
+
+    .validation-message {
+        color: red; 
+        margin-bottom: 20px; 
+    } 
+    
+    .response-content { 
+        margin-top: 20px; 
+    } 
+    
+    button { 
+        margin-bottom: 20px 
+    }
+
+</style>
+
+
+@* <div *@
+@*     @ondragover:preventDefault *@
+@*     @ondragenter:preventDefault *@
+@*     @ondrop="OnDrop" *@
+@*     style="width: 300px; height: 200px; border: 2px dashed #ccc; display: flex; justify-content: center; align-items: center;"> *@
+@*     <p>@(isDragging ? "release" : "drag and drop json")</p> *@
+@* ></div> *@
 
 @if (_popupVisible)
 {
