@@ -45,7 +45,7 @@ public partial class JsonPositions : ComponentBase
     {
         try
         {
-            var response = await EmployeeService.AddPositionsJson(_positions);
+            var response = await EmployeeService.AddPositionsJson(_positions!);
 
             _responseContent = response.StatusCode == HttpStatusCode.NoContent
                 ? 

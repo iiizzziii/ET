@@ -4,7 +4,6 @@
 
 <h3>Upload Positions</h3>
 <div class="alert alert-info">JSON structure: "positions": [ "name1", "name2", ... ]</div>
-
 <InputFile OnChange="@HandleFile" accept=".json"/>
 @if (!string.IsNullOrEmpty(_validationMessage))
 {
@@ -22,18 +21,3 @@
         <div><pre>@_responseContent</pre></div>
     }
 </div>
-
-<style>
-.validation-message {
-    color: red; 
-    margin-bottom: 20px; 
-} 
-
-.response-content { 
-    margin-top: 20px; 
-} 
-
-button { 
-    margin-bottom: 20px 
-}
-</style>

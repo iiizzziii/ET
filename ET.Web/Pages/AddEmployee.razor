@@ -1,14 +1,9 @@
 @page "/add"
-@using ET.Models
 @using ET.Web.Services
-@using System.ComponentModel.DataAnnotations
-@using System.Text.Json
-
 @inject IEmployeeService EmployeeService
 @inject NavigationManager NavigationManager
 
 <h3>Add Employee</h3>
-
 <EditForm EditContext="_editContext" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />

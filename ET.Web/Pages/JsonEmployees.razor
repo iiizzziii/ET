@@ -1,47 +1,23 @@
 @page "/json-employees"
 @using ET.Web.Services
-
 @inject IEmployeeService EmployeeService
-@inject NavigationManager NavigationManager
 
 <h3>Upload Employees</h3>
-<div class="alert alert-info">Copy content of a JSON file if containing positions.</div>
-<div>
-    <textarea class="form-control" rows="10" @bind="_jsonInput" placeholder="Drag or copy here"></textarea>
-    @if (!string.IsNullOrEmpty(_message))
-    {
-        <div class="text-danger mt-2">@_message</div>
-    }
-    <button class="btn btn-primary mt-2" @onclick="UploadJson">Upload</button>
-</div>
-
-@if (_popupVisible)
+<div class="alert alert-info">JSON structure: "employees": [ { "employee1", "employee2", ... }</div>
+<InputFile OnChange="@HandleFile" accept=".json"/>
+@if (!string.IsNullOrEmpty(_validationMessage))
 {
-    <div class="popup-overlay">
-        <div class="popup">
-            <p>@_popupMessage</p>
-        </div>
+    <div class="validation-message">
+        <p>@_validationMessage</p>
     </div>
 }
-
-<style>
-    .popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
+@if (_employees != null)
+{
+    <button @onclick="UploadJson">Upload</button>
+}
+<div class="response-content">
+    @if (_responseContent != null)
+    {
+        <div><pre>@_responseContent</pre></div>
     }
-    .popup {
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        text-align: center;
-    }
-</style>
+</div>

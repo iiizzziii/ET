@@ -11,10 +11,9 @@ public partial class DisplayEmployees : ComponentBase
     public IEnumerable<Employee>? employees { get; set; }
     private IEnumerable<string> positions;
     private EmployeeForm editEmployee;
+    private Employee? _viewEmployee;
     private bool visibleModal;
     private Dictionary<string, List<string>> validationErrors = new();
-    // private bool visibleView;
-    private Employee? _viewEmployee;
     
     protected override async Task OnInitializedAsync()
     {
@@ -86,16 +85,7 @@ public partial class DisplayEmployees : ComponentBase
     private void ViewEmployeeDetails(Employee employee)
     {
         _viewEmployee = employee;
-        // visibleView = true;
-
         var parameters = new ModalParameters { { nameof(ViewEmployee.Employee), employee } };
-
         ModalService.Show<ViewEmployee>("Employee Details", parameters);
-    }
-
-    private void CloseView()
-    {
-        _viewEmployee = default;
-        // visibleView = false;
     }
 }
